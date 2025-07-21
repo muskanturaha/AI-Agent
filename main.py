@@ -4,10 +4,15 @@ from data_stream import ticket_stream
 from classifier import classify
 from spike_detector import SpikeDetector
 from slack_alert import send_slack_alert
+# ...
 
-def run(csv_path: str, slack_url: str):
+def run(csv_path, slack_url):
     detector = SpikeDetector(
-        callback=lambda alert: send_slack_alert(slack_url, alert)
+        window_minutes = 5,
+        check_every    = 5,
+        thresh_neg_percent = 0.20,
+        callback = lambda alert: send_slack_alert(slack_url, alert),
+        history_csv = "window_stats.csv"
     )
     rows = []
 
@@ -34,3 +39,4 @@ if __name__ == "__main__":
     ap.add_argument("--slack_url", required=True, help="Slack Incoming‑Webhook URL")
     args = ap.parse_args()
     run(args.csv, args.slack_url)
+
